@@ -13,7 +13,10 @@ routes.get('/', (req, res) => {
 routes.post('/users', UserController.store);
 routes.post('/users/authenticate', UserController.auth);
 
-routes.get('/users', UserController.index);
+routes.get('/users', authMiddleware, UserController.index);
+
+routes.put('/users/:user_id', UserController.update);
+routes.delete('/users/:user_id', UserController.delete);
 
 routes.use(authMiddleware);
 

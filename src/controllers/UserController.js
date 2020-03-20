@@ -21,6 +21,12 @@ module.exports = {
     async store(req, res) {
         const { name, password, email, islogged } = req.body;
 
+        const userExists = await User.findOne({ where: { email } });
+
+        if (userExists) {
+            return res.status(400).send({ error: 'email already exists!' });
+        }
+
         const user = await User.create({ name, password, email, islogged });
 
         user.password = undefined
@@ -37,7 +43,6 @@ module.exports = {
 
         if (!user) {
             return res.status(400).send({ error: 'User not found' });
-
         }
 
         if (!bcrypt.compareSync(password, user.password)) {
@@ -52,5 +57,45 @@ module.exports = {
 
 
     },
+
+    async update(req, res) {
+
+        const { name, password, email, islogged } = req.body;
+
+        const { user_id } = req.params;
+
+        const user = await User.findByPk(user_id);
+
+        if (!user) {
+            return res.status(400).send({ error: 'User not found' });
+        } else {
+            await User.update({
+                name, password, email, islogged
+            }, {
+                where: {
+                    id: user_id
+                }
+            });
+            return res.status(200).send({ msg: "Update User Success!" });
+        }
+    },
+
+    async delete(req, res) {
+
+        const { user_id } = req.params;
+
+        const user = await User.findByPk(user_id);
+
+        if (!user) {
+            return res.status(400).send({ error: 'User not found' });
+        } else {
+            await User.destroy({
+                where: {
+                    id: user_id
+                }
+            });
+            return res.status(200).send({ msg: "Delete User Success!" });
+        }
+    }
 
 };
