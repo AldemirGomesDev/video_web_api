@@ -5,6 +5,7 @@ class Video extends Model {
         super.init({
             name: DataTypes.STRING,
             url: DataTypes.STRING,
+            description: DataTypes.STRING,
         }, {
             sequelize
         })

@@ -21,6 +21,7 @@ routes.delete('/users/:user_id', UserController.delete);
 routes.use(authMiddleware);
 
 routes.get('/users/:user_id/videos/:page/:limit', VideoController.index);
+routes.get('/users/:user_id/search/:page/:limit', VideoController.search);
 routes.post('/users/:user_id/videos', VideoController.store);
 routes.delete('/users/:id/videos', VideoController.delete);
 routes.put('/users/:id/videos', VideoController.update);

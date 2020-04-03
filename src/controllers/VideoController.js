@@ -1,3 +1,4 @@
+const { Sequelize } = require('sequelize');
 const User = require('../models/User');
 const Video = require('../models/Video');
 
@@ -40,9 +41,51 @@ module.exports = {
         });
     },
 
+    async search(req, res) {
+        const { user_id, page, limit } = req.params;
+        const Op = Sequelize.Op;
+        var name = req.query.name
+        const query = `%${name}%`
+        console.log(`name: ${name}`)
+
+        const limite = parseInt(limit);
+        const pageCurrent = parseInt(page);
+
+        const offset = pageCurrent * limite;
+
+        const video = await Video.findAll({
+            where: { user_id, name: { [Op.like]: query } }
+        });
+
+        const count = video.length
+
+        const pages = Math.ceil(count / limite);
+
+        const videos = await Video.findAll({
+            where: { user_id, name: { [Op.like]: query } },
+            offset: offset,
+            limit: limite
+        });
+
+        if (!videos) {
+            return res.status(400).send({
+                status: 0,
+                message: 'Vídeo não encontrado!'
+            });
+        }
+
+        return res.status(200).send({
+            total: count,
+            pages: pages,
+            currentPageCount: videos.length,
+            currentPage: pageCurrent + 1,
+            videos
+        });
+    },
+
     async store(req, res) {
         const { user_id } = req.params;
-        const { name, url } = req.body;
+        const { name, url, description } = req.body;
 
         const user = await User.findByPk(user_id);
 
@@ -53,7 +96,7 @@ module.exports = {
             });
         }
 
-        if (name == "" || url == "") {
+        if (name == "" || name == null || url == "" || url == null || description == "" || description == null) {
             return res.status(400).json({
                 status: 0,
                 message: 'Campos obrigatório vazios!'
@@ -63,6 +106,7 @@ module.exports = {
         const video = await Video.create({
             name,
             url,
+            description,
             user_id,
         });
 
@@ -102,13 +146,13 @@ module.exports = {
 
     async update(req, res) {
         const id = req.params.id;
-        const { name } = req.body;
+        const { name, description } = req.body;
 
         try {
             const video = await Video.findByPk(id);
 
             if (video) {
-                await Video.update({ name }, { where: { id } });
+                await Video.update({ name, description }, { where: { id } });
 
                 return res.status(200).json({
                     status: 1,
