@@ -12,8 +12,9 @@ routes.get('/', (req, res) => {
 
 routes.post('/users', UserController.store);
 routes.post('/users/authenticate', UserController.auth);
+routes.post('/users/:user_id/logout', UserController.logout);
 
-routes.post('/user', UserController.index);
+routes.get('/users/:page/:limit', UserController.index);
 
 routes.put('/users/:user_id', UserController.update);
 routes.delete('/users/:user_id', UserController.delete);
@@ -22,6 +23,7 @@ routes.use(authMiddleware);
 
 routes.get('/users/:user_id/videos/:page/:limit', VideoController.index);
 routes.get('/users/:user_id/search/:page/:limit', VideoController.search);
+routes.get('/users/:user_id/videos', VideoController.findByPk);
 routes.post('/users/:user_id/videos', VideoController.store);
 routes.delete('/users/:id/videos', VideoController.delete);
 routes.put('/users/:id/videos', VideoController.update);

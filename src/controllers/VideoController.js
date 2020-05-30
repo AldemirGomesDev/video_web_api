@@ -41,6 +41,28 @@ module.exports = {
         });
     },
 
+    async findByPk(req, res) {
+        const { user_id } = req.params;
+        
+        console.log(`name: ${user_id}`)
+
+        const video = await Video.findByPk(user_id);
+
+
+        if (!video) {
+            return res.status(400).send({
+                status: 0,
+                message: 'Vídeo não encontrado!'
+            });
+        }
+
+        return res.status(200).send({
+            status: 1,
+            message: 'Vídeo encontrado!',
+            video
+        });
+    },
+
     async search(req, res) {
         const { user_id, page, limit } = req.params;
         const Op = Sequelize.Op;
@@ -146,13 +168,13 @@ module.exports = {
 
     async update(req, res) {
         const id = req.params.id;
-        const { name, description } = req.body;
+        const { name, description, url } = req.body;
 
         try {
             const video = await Video.findByPk(id);
 
             if (video) {
-                await Video.update({ name, description }, { where: { id } });
+                await Video.update({ name, description, url }, { where: { id } });
 
                 return res.status(200).json({
                     status: 1,

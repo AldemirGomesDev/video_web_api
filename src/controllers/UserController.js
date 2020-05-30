@@ -6,28 +6,34 @@ const authConfig = require('../config/auth')
 
 function generateToken(params = {}) {
     return jwt.sign({ params }, authConfig.secret, {
-        expiresIn: 86400,
+        expiresIn: 78300,
     });
 }
 
 module.exports = {
     async index(req, res) {
 
-        const { page, limit } = req.body;
+        // const { page, limit } = req.body;
+        const { page, limit } = req.params;
 
         const user2 = await User.findAll({});
 
         const count = user2.length
 
-        const pages = Math.ceil(count / limit);
-        const offset = page * limit;
+        const limite = parseInt(limit);
+        const pageCurrent = parseInt(page);
+
+        const pages = Math.ceil(count / limite);
+        const offset = pageCurrent * limite;
 
         const user = await User.findAll({
             offset: offset,
-            limit: limit
+            limit: limite
         });
 
+        user.password = undefined
         const currentPageCount = user.length
+
 
         return res.status(200).send({
             total: count,
@@ -39,7 +45,7 @@ module.exports = {
     },
 
     async store(req, res) {
-        const { name, password, email, islogged } = req.body;
+        const { name, password, email, islogged, isadmin, registration } = req.body;
 
         const userExists = await User.findOne({ where: { email } });
 
@@ -50,7 +56,7 @@ module.exports = {
             });
         }
 
-        const user = await User.create({ name, password, email, islogged });
+        const user = await User.create({ name, password, email, islogged, isadmin, registration });
 
         user.password = undefined
 
@@ -63,13 +69,33 @@ module.exports = {
         });
     },
 
+    async logout(req, res) {
+        const { name, password, email, islogged } = req.body;
+
+        const { user_id } = req.params;
+
+        await User.update({
+            name, password, email, islogged
+        }, {
+            where: {
+                id: user_id
+            }
+        });
+        return res.status(200).send({
+            status: 1,
+            message: "Usuário deslogado com sucesso!",
+        });
+        
+    },
+
     async auth(req, res) {
-        const { password, email, islogged } = req.body;
-
+        const { password, email, islogged, matricula } = req.body;
+        
         const user = await User.findOne({ where: { email } });
-
+        
         if (!user) {
-            return res.status(400).send({
+            console.log(matricula)
+            return res.status(400).json({
                 status: 0,
                 message: 'E-mail ou senha incorreto!'
             });

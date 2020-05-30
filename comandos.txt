@@ -1,0 +1,25 @@
+yarn sequelize db:create
+
+yarn sequelize migration:create --name=create-users
+
+yarn sequelize migration:create --name=add-islogged-column-user-table
+
+yarn sequelize db:migrate
+
+yarn sequelize db:migrate:undo
+
+
+yarn add bcryptjs
+
+yarn add cors
+
+yarn add body-parser
+
+//aula 06
+
+yarn add jsonwebtoken
+
+criar arquivo auth.json
+
+
+echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
