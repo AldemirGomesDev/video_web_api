@@ -11,8 +11,43 @@ function generateToken(params = {}) {
 }
 
 module.exports = {
+    async findByPk(req, res) {
+
+        console.log(`---------------------User findByPk-----------------------:`)
+        const { id } = req.params;
+
+        const user = await User.findByPk(id)
+
+        if(!user) {
+            return res.status(400).send({
+                status: 0,
+                message: 'Usuário não encontrado!'
+            });
+        }
+
+        return res.status(200).send({ user });
+    },
+
+    async findByRegistration(req, res) {
+
+        console.log(`---------------------User findByRegistration-----------------------:`)
+        const { registration } = req.params;
+
+        const user = await User.findOne({ where: { registration } });
+
+        if(!user) {
+            return res.status(400).send({
+                status: 0,
+                message: 'Usuário não encontrado!'
+            });
+        }
+
+        return res.status(200).send({ user });
+    },
+
     async index(req, res) {
 
+        console.log(`---------------------User index-----------------------:`)
         // const { page, limit } = req.body;
         const { page, limit } = req.params;
 
@@ -26,10 +61,7 @@ module.exports = {
         const pages = Math.ceil(count / limite);
         const offset = pageCurrent * limite;
 
-        const user = await User.findAll({
-            offset: offset,
-            limit: limite
-        });
+        const user = await User.findAll();
 
         user.password = undefined
         const currentPageCount = user.length
@@ -100,7 +132,6 @@ module.exports = {
                 message: 'E-mail ou senha incorreto!'
             });
         }
-
         if (!bcrypt.compareSync(password, user.password)) {
             return res.status(400).send({
                 status: 0,

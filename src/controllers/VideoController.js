@@ -6,21 +6,20 @@ module.exports = {
     async index(req, res) {
         const { user_id, page, limit } = req.params;
 
+        console.log(`---------------------video index------------------------: ${user_id}`)
+
         const limite = parseInt(limit);
         const pageCurrent = parseInt(page);
 
         const offset = pageCurrent * limite;
 
-        const video = await Video.findAll({
-            where: { user_id }
-        });
+        const video = await Video.findAll();
 
         const count = video.length
 
         const pages = Math.ceil(count / limite);
 
         const videos = await Video.findAll({
-            where: { user_id },
             offset: offset,
             limit: limite
         });
@@ -42,11 +41,11 @@ module.exports = {
     },
 
     async findByPk(req, res) {
-        const { user_id } = req.params;
+        const { id } = req.params;
         
-        console.log(`name: ${user_id}`)
+        console.log(`---------------------video findByPk------------------------: ${id}`)
 
-        const video = await Video.findByPk(user_id);
+        const video = await Video.findByPk(id);
 
 
         if (!video) {
@@ -65,6 +64,7 @@ module.exports = {
 
     async search(req, res) {
         const { user_id, page, limit } = req.params;
+        console.log(`---------------------video search------------------------: ${user_id}`)
         const Op = Sequelize.Op;
         var name = req.query.name
         const query = `%${name}%`
@@ -76,7 +76,7 @@ module.exports = {
         const offset = pageCurrent * limite;
 
         const video = await Video.findAll({
-            where: { user_id, name: { [Op.like]: query } }
+            where: { name: { [Op.like]: query } }
         });
 
         const count = video.length
@@ -84,7 +84,7 @@ module.exports = {
         const pages = Math.ceil(count / limite);
 
         const videos = await Video.findAll({
-            where: { user_id, name: { [Op.like]: query } },
+            where: { name: { [Op.like]: query } },
             offset: offset,
             limit: limite
         });

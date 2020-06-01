@@ -15,17 +15,19 @@ routes.post('/users/authenticate', UserController.auth);
 routes.post('/users/:user_id/logout', UserController.logout);
 
 routes.get('/users/:page/:limit', UserController.index);
+routes.get('/user/:id', UserController.findByPk);
+routes.get('/user/admin/:registration', UserController.findByRegistration);
 
 routes.put('/users/:user_id', UserController.update);
 routes.delete('/users/:user_id', UserController.delete);
 
 routes.use(authMiddleware);
 
-routes.get('/users/:user_id/videos/:page/:limit', VideoController.index);
-routes.get('/users/:user_id/search/:page/:limit', VideoController.search);
-routes.get('/users/:user_id/videos', VideoController.findByPk);
-routes.post('/users/:user_id/videos', VideoController.store);
-routes.delete('/users/:id/videos', VideoController.delete);
-routes.put('/users/:id/videos', VideoController.update);
+routes.get('/users/videos/:page/:limit', VideoController.index);
+routes.get('/video/search/:page/:limit', VideoController.search);
+routes.get('/video/:id', VideoController.findByPk);
+routes.post('/video/:user_id', VideoController.store);
+routes.delete('/video/:id', VideoController.delete);
+routes.put('/video/:id', VideoController.update);
 
 module.exports = routes;
