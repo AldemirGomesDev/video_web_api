@@ -6,7 +6,7 @@ const authConfig = require('../config/auth')
 
 function generateToken(params = {}) {
     return jwt.sign({ params }, authConfig.secret, {
-        expiresIn: 78300,
+        expiresIn: 60,
     });
 }
 
@@ -32,8 +32,9 @@ module.exports = {
 
         console.log(`---------------------User findByRegistration-----------------------:`)
         const { registration } = req.params;
-
-        const user = await User.findOne({ where: { registration } });
+        const isadmin = true;
+        
+        const user = await User.findOne({ where: { registration, isadmin } });
 
         if(!user) {
             return res.status(400).send({
@@ -166,7 +167,7 @@ module.exports = {
 
     async update(req, res) {
 
-        const { name, password, email, islogged } = req.body;
+        const { name, password, email, islogged, isadmin, registration } = req.body;
 
         const { user_id } = req.params;
 
@@ -178,8 +179,10 @@ module.exports = {
                 message: 'Usuário não encontrado!'
             });
         } else {
+            // await User.create({ name, password, email, islogged, isadmin, registration });
+
             await User.update({
-                name, password, email, islogged
+                name, password, email, islogged, isadmin, registration
             }, {
                 where: {
                     id: user_id

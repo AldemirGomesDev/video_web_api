@@ -13,15 +13,14 @@ routes.get('/', (req, res) => {
 routes.post('/users', UserController.store);
 routes.post('/users/authenticate', UserController.auth);
 routes.post('/users/:user_id/logout', UserController.logout);
+routes.get('/user/admin/:registration', UserController.findByRegistration);
+
+routes.use(authMiddleware);
 
 routes.get('/users/:page/:limit', UserController.index);
 routes.get('/user/:id', UserController.findByPk);
-routes.get('/user/admin/:registration', UserController.findByRegistration);
-
 routes.put('/users/:user_id', UserController.update);
 routes.delete('/users/:user_id', UserController.delete);
-
-routes.use(authMiddleware);
 
 routes.get('/users/videos/:page/:limit', VideoController.index);
 routes.get('/video/search/:page/:limit', VideoController.search);
